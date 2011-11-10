@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <math.h>
 
 #include "k3d.h"
 
@@ -9,7 +10,7 @@ namespace k3d {
         loadIdentity();
     }
 
-    mat4::mat4(float *mat) {
+    mat4::mat4(const float *mat) {
 #define M(row, col) mat[4*col + row]
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
@@ -19,12 +20,11 @@ namespace k3d {
 #undef M
     }
 
-    std::ostream & operator<<(std::ostream & os, const mat4 & m) {
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 4; col++) {
-                os << std::setw(5) << m.m[col][row] << ' ';
+    mat4::mat4(const float mat[4][4]) {
+        for (int col = 0; col < 4; col++) {
+            for (int row = 0; row < 4; row++) {
+                m[col][row] = mat[col][row];
             }
-            os << '\n';
         }
     }
 
@@ -45,7 +45,21 @@ namespace k3d {
         return r;
     }
 
-    void mat4::loadIdentity()
+    std::ostream & operator<<(std::ostream & os, const mat4 & m) {
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                os << std::setw(5) << m.m[col][row] << ' ';
+            }
+            os << '\n';
+        }
+    }
+
+    void mat4::glUniform(GLuint loc)
+    {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, (const GLfloat*)m);
+    }
+
+   void mat4::loadIdentity()
     {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -72,9 +86,19 @@ namespace k3d {
         }
     }
 
-    void mat4::glUniform(GLuint loc)
+    void mat4::rotatef(vec3 u, float angle)
     {
-        glUniformMatrix4fv(loc, 1, GL_FALSE, (const GLfloat*)m);
+        float cos = cosf(angle);
+        float sin = sinf(angle);
+        u.normalize();
+        float r[4][4] = 
+        {
+            { cos + u.x*u.x*(1-cos), u.x*u.y*(1-cos) - u.z*sin, u.x*u.z*(1-cos) + u.y*sin, 0.0 },
+            { u.y*u.x*(1-cos) + u.z*sin, cos + u.y*u.y*(1-cos), u.y*u.z*(1-cos) - u.x*sin, 0.0 },
+            { u.z*u.x*(1-cos) - u.y*sin, u.z*u.y*(1-cos) + u.x*sin, cos + u.z*u.z*(1-cos), 0.0 },
+            { 0.0, 0.0, 0.0, 1.0 }
+        };
+        *this = *this * mat4(r);
     }
 
 }

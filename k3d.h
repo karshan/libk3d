@@ -22,7 +22,7 @@ namespace k3d
         vec3(): x(0.0), y(0.0), z(0.0) {}
         vec3(float xx, float yy, float zz): x(xx), y(yy), z(zz) {}
 
-        void normalize();
+        vec3 & normalize();
         vec3 & operator=(const vec3 & rhs);
         friend vec3 cross(const vec3 & a, const vec3 & b);
         friend float dot(const vec3 & a, const vec3 & b);
@@ -34,9 +34,12 @@ namespace k3d
         float m[4][4];
 
         mat4();
-        mat4(float *mat);
+        mat4(const float *mat);
+        mat4(const float mat[4][4]);
 
         friend std::ostream & operator<<(std::ostream &, const mat4 &);
+
+        friend mat4 operator*(const mat4 & a, const mat4 & b);
 
         void glUniform(GLuint loc);
 
@@ -46,7 +49,7 @@ namespace k3d
 
         void translatef(float a, float b, float c);
 
-        friend mat4 operator*(const mat4 & a, const mat4 & b);
+        void rotatef(vec3 u, float angle);
     };
 
     struct face {

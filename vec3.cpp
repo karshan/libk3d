@@ -4,7 +4,7 @@
 
 namespace k3d {
 
-    void vec3::normalize()
+    vec3 & vec3::normalize()
     {
         float den = sqrt(x*x + y*y + z*z);
         if (den > 0.0) {
@@ -12,6 +12,7 @@ namespace k3d {
             y /= den;
             z /= den;
         }
+        return *this;
     }
 
     vec3 & vec3::operator=(const vec3 & rhs)
