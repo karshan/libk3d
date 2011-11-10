@@ -34,10 +34,10 @@ namespace k3d {
 
     void mat4::scalef(float x, float y, float z)
     {
-        float s[3] = {x, y, z};
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[j][i] *= s[i];
+        float s[4] = {x, y, z, 1.0};
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                m[col][row] *= s[col];
             }
         }
     }
@@ -45,9 +45,9 @@ namespace k3d {
     void mat4::translatef(float a, float b, float c)
     {
         float t[3] = {a, b, c};
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[j][i] += m[j][3]*t[i];
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 4; col++) {
+                m[col][row] += m[col][3]*t[row];
             }
         }
     }
