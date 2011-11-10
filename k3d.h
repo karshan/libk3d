@@ -11,6 +11,7 @@
 #include <GL/gl.h>
 #endif
 
+#include <iostream>
 #include <vector>
 
 namespace k3d
@@ -33,6 +34,9 @@ namespace k3d
         float m[4][4];
 
         mat4();
+        mat4(float *mat);
+
+        friend std::ostream & operator<<(std::ostream &, const mat4 &);
 
         void glUniform(GLuint loc);
 

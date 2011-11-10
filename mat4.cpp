@@ -1,9 +1,31 @@
+#include <iostream>
+#include <iomanip>
+
 #include "k3d.h"
 
 namespace k3d {
 
     mat4::mat4() {
         loadIdentity();
+    }
+
+    mat4::mat4(float *mat) {
+#define M(row, col) mat[4*col + row]
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                m[col][row] = M(row, col);
+            }
+        }
+#undef M
+    }
+
+    std::ostream & operator<<(std::ostream & os, const mat4 & m) {
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                os << std::setw(5) << m.m[col][row] << ' ';
+            }
+            os << '\n';
+        }
     }
 
     mat4 operator*(const mat4 & a, const mat4 & b)
@@ -35,9 +57,9 @@ namespace k3d {
     void mat4::scalef(float x, float y, float z)
     {
         float s[3] = {x, y, z};
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[j][i] *= s[i];
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 3; col++) {
+                m[col][row] *= s[col];
             }
         }
     }
@@ -45,10 +67,8 @@ namespace k3d {
     void mat4::translatef(float a, float b, float c)
     {
         float t[3] = {a, b, c};
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[j][i] += m[j][3]*t[i];
-            }
+        for (int row = 0; row < 4; row++) {
+            m[3][row] += a*m[0][row] + b*m[1][row] + c*m[2][row];
         }
     }
 
