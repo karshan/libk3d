@@ -45,6 +45,8 @@ namespace k3d
 
         void loadIdentity();
 
+        mat4 & transpose();
+
         void scalef(float x, float y, float z);
 
         void translatef(float a, float b, float c);

@@ -59,13 +59,24 @@ namespace k3d {
         glUniformMatrix4fv(loc, 1, GL_FALSE, (const GLfloat*)m);
     }
 
-   void mat4::loadIdentity()
+    void mat4::loadIdentity()
     {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 m[j][i] = (i == j)?1.0:0.0;
             }
         }
+    }
+
+    mat4 & mat4::transpose()
+    {
+        mat4 tmp(*this);
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                m[row][col] = tmp.m[col][row];
+            }
+        }
+        return *this;
     }
 
     void mat4::scalef(float x, float y, float z)
@@ -98,7 +109,7 @@ namespace k3d {
             { u.z*u.x*(1-cos) - u.y*sin, u.z*u.y*(1-cos) + u.x*sin, cos + u.z*u.z*(1-cos), 0.0 },
             { 0.0, 0.0, 0.0, 1.0 }
         };
-        *this = *this * mat4(r);
+        *this = *this * (mat4(r)).transpose(); //FIXME sad bug, I didn't write the matrix in column major so I have to transpose it here
     }
 
 }
