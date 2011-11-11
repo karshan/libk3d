@@ -14,9 +14,9 @@ namespace k3d {
         glEnableVertexAttribArray(gvPositionHandle);
 //        checkGlError("glEnableVertexAttribArray");
 
-        //glVertexAttribPointer(gvNormalHandle, 3, GL_FLOAT, GL_FALSE, 0, &(ns[0]));
+        glVertexAttribPointer(gvNormalHandle, 3, GL_FLOAT, GL_FALSE, 0, &(ns[0]));
         //checkGlError("glVertexAttribPointer");
-        //glEnableVertexAttribArray(gvNormalHandle);
+        glEnableVertexAttribArray(gvNormalHandle);
 
         glDrawElements(GL_TRIANGLES, faces.size()*3, GL_UNSIGNED_SHORT, &(faces[0]));
 //        checkGlError("glDrawElements");
@@ -32,11 +32,15 @@ namespace k3d {
     void model::computeNormals()
     {
         for (unsigned i = 0; i < vs.size(); i++) {
+            int count = 0;
+            ns.push_back(vec3(0.0, 0.0, 0.0));
             for (unsigned j = 0; j < faces.size(); j++) {
                 face f = faces[j];
                 if (f.a == i || f.b == i || f.c == i) {
+                    ns[i] = ns[i] + cross(vs[f.b] - vs[f.a], vs[f.c] - vs[f.a]);
                 }
             }
+            ns[i] = (1.0/(float)count)*ns[i];
         }
     }
 
