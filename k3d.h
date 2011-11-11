@@ -23,11 +23,13 @@ namespace k3d
         vec3(float xx, float yy, float zz): x(xx), y(yy), z(zz) {}
 
         vec3 & normalize();
+        float magnitude();
         vec3 & operator=(const vec3 & rhs);
         friend vec3 cross(const vec3 & a, const vec3 & b);
         friend float dot(const vec3 & a, const vec3 & b);
         friend vec3 operator+(const vec3 & a, const vec3 & b);
         friend vec3 operator-(const vec3 & a, const vec3 & b);
+        friend vec3 operator*(const float & s, const vec3 & v);
     };
 
     struct mat4 {
@@ -38,6 +40,8 @@ namespace k3d
         mat4(const float mat[4][4]);
 
         friend std::ostream & operator<<(std::ostream &, const mat4 &);
+
+        friend bool operator==(const mat4 & a, const mat4 & b);
 
         friend mat4 operator*(const mat4 & a, const mat4 & b);
 
@@ -52,6 +56,10 @@ namespace k3d
         void translatef(float a, float b, float c);
 
         void rotatef(vec3 u, float angle);
+
+        void lookAt(vec3 eye, vec3 center, vec3 up);
+
+        void infPerspective(); // TO BE REPLACED
     };
 
     struct face {

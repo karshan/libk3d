@@ -28,6 +28,19 @@ namespace k3d {
         }
     }
 
+    bool operator==(const mat4 & a, const mat4 & b) {
+        float d;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                d = a.m[i][j] - b.m[i][j];
+                d = d < 0 ? -d:d;
+                if (d > 0.0001)
+                    return false;
+            }
+        }
+        return true;
+    }
+
     mat4 operator*(const mat4 & a, const mat4 & b)
     {
         mat4 r;
@@ -48,7 +61,7 @@ namespace k3d {
     std::ostream & operator<<(std::ostream & os, const mat4 & m) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
-                os << std::setw(5) << m.m[col][row] << ' ';
+                os << std::fixed << std::setw(10) << std::setprecision(3) << m.m[col][row] << ' ';
             }
             os << '\n';
         }
@@ -99,10 +112,11 @@ namespace k3d {
 
     void mat4::rotatef(vec3 u, float angle)
     {
+        angle = angle * M_PI/180.0;
         float cos = cosf(angle);
         float sin = sinf(angle);
         u.normalize();
-        float r[4][4] = 
+        float r[4][4] =
         {
             { cos + u.x*u.x*(1-cos), u.x*u.y*(1-cos) - u.z*sin, u.x*u.z*(1-cos) + u.y*sin, 0.0 },
             { u.y*u.x*(1-cos) + u.z*sin, cos + u.y*u.y*(1-cos), u.y*u.z*(1-cos) - u.x*sin, 0.0 },
@@ -110,6 +124,36 @@ namespace k3d {
             { 0.0, 0.0, 0.0, 1.0 }
         };
         *this = *this * (mat4(r)).transpose(); //FIXME sad bug, I didn't write the matrix in column major so I have to transpose it here
+    }
+
+    void mat4::lookAt(vec3 eye, vec3 center, vec3 up)
+    {
+        vec3 n = (eye - center); // viewplane normal == lookat vector FIXME what the hell ? this should be -n
+        vec3 v = up - ((dot(up, n)/dot(n, n))*n); // up vector projection in viewplane
+        vec3 u = cross(v, n).normalize();
+        n.normalize();
+        v.normalize();
+
+        // remember this is column major
+        float m[4][4] = {
+            { u.x, u.y, u.z, 0.0 },
+            { v.x, v.y, v.z, 0.0 },
+            { n.x, n.y, n.z, 0.0 },
+            { 0.0, 0.0, 0.0, 1.0}
+        };
+        *this = *this * mat4(m).transpose(); // FIXME what the hell... why is transpose correct ?
+
+        translatef(-eye.x, -eye.y, -eye.z);
+    }
+
+    // This is a temporary function, it will be replaced with a perspective
+    // function that allows you to specify a viewing frustum
+    void mat4::infPerspective()
+    {
+        mat4 m;
+        m.m[3][3] = 0.0;
+        m.m[2][3] = -1.0;
+        *this = *this * m;
     }
 
 }

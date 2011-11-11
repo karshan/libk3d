@@ -15,6 +15,16 @@ namespace k3d {
         return *this;
     }
 
+    float vec3::magnitude()
+    {
+        return sqrt(x*x + y*y + z*z);
+    }
+
+    vec3 operator*(const float & s, const vec3 & v)
+    {
+        return vec3(s*v.x, s*v.y, s*v.z);
+    }
+
     vec3 & vec3::operator=(const vec3 & rhs)
     {
         if (this == &rhs)
