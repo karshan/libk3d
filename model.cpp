@@ -37,10 +37,10 @@ namespace k3d {
             for (unsigned j = 0; j < faces.size(); j++) {
                 face f = faces[j];
                 if (f.a == i || f.b == i || f.c == i) {
-                    ns[i] = ns[i] + cross(vs[f.b] - vs[f.a], vs[f.c] - vs[f.a]);
+                    vec3 n = cross(vs[f.c] - vs[f.b], vs[f.a] - vs[f.b]).normalize();
+                    ns[i] = ns[i] + n;
                 }
             }
-            ns[i] = (1.0/(float)count)*ns[i];
         }
     }
 

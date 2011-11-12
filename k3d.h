@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 
+// TODO: const correctness (for member functions)
 namespace k3d
 {
     struct vec3 {
@@ -44,12 +45,15 @@ namespace k3d
         friend bool operator==(const mat4 & a, const mat4 & b);
 
         friend mat4 operator*(const mat4 & a, const mat4 & b);
+        mat4 & operator*=(const float s);
 
         void glUniform(GLuint loc);
 
         void loadIdentity();
 
         mat4 & transpose();
+
+        mat4 & inverse();
 
         void scalef(float x, float y, float z);
 
@@ -61,6 +65,8 @@ namespace k3d
 
         void infPerspective(); // TO BE REPLACED
     };
+
+    vec3 operator*(const mat4 & mat, const vec3 & v); //hacky
 
     struct face {
         GLushort a, b, c;

@@ -58,6 +58,24 @@ namespace k3d {
         return r;
     }
 
+    vec3 operator*(const mat4 & mat, const vec3 & v) //hacky
+    {
+        vec3 out(mat.m[0][0]*v.x + mat.m[1][0]*v.y + mat.m[2][0]*v.z + mat.m[3][0],
+                mat.m[0][1]*v.x + mat.m[1][1]*v.y + mat.m[2][1]*v.z + mat.m[3][1],
+                mat.m[0][2]*v.x + mat.m[1][2]*v.y + mat.m[2][2]*v.z + mat.m[3][2]);
+        float w = mat.m[0][3]*v.x + mat.m[1][3]*v.y + mat.m[2][3]*v.z + mat.m[3][3];
+        return (1.0/w)*out;
+    }
+
+    mat4 & mat4::operator*=(const float s)
+    {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                m[i][j] *= s;
+            }
+        }
+    }
+
     std::ostream & operator<<(std::ostream & os, const mat4 & m) {
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
@@ -89,6 +107,84 @@ namespace k3d {
                 m[row][col] = tmp.m[col][row];
             }
         }
+        return *this;
+    }
+
+    mat4 & mat4::inverse()
+    {
+        // Calculate all mat2 determinants
+        float SubFactor00 = this->m[2][2] * this->m[3][3] - this->m[3][2] * this->m[2][3];
+        float SubFactor01 = this->m[2][1] * this->m[3][3] - this->m[3][1] * this->m[2][3];
+        float SubFactor02 = this->m[2][1] * this->m[3][2] - this->m[3][1] * this->m[2][2];
+        float SubFactor03 = this->m[2][0] * this->m[3][3] - this->m[3][0] * this->m[2][3];
+        float SubFactor04 = this->m[2][0] * this->m[3][2] - this->m[3][0] * this->m[2][2];
+        float SubFactor05 = this->m[2][0] * this->m[3][1] - this->m[3][0] * this->m[2][1];
+        float SubFactor06 = this->m[1][2] * this->m[3][3] - this->m[3][2] * this->m[1][3];
+        float SubFactor07 = this->m[1][1] * this->m[3][3] - this->m[3][1] * this->m[1][3];
+        float SubFactor08 = this->m[1][1] * this->m[3][2] - this->m[3][1] * this->m[1][2];
+        float SubFactor09 = this->m[1][0] * this->m[3][3] - this->m[3][0] * this->m[1][3];
+        float SubFactor10 = this->m[1][0] * this->m[3][2] - this->m[3][0] * this->m[1][2];
+        float SubFactor11 = this->m[1][1] * this->m[3][3] - this->m[3][1] * this->m[1][3];
+        float SubFactor12 = this->m[1][0] * this->m[3][1] - this->m[3][0] * this->m[1][1];
+        float SubFactor13 = this->m[1][2] * this->m[2][3] - this->m[2][2] * this->m[1][3];
+        float SubFactor14 = this->m[1][1] * this->m[2][3] - this->m[2][1] * this->m[1][3];
+        float SubFactor15 = this->m[1][1] * this->m[2][2] - this->m[2][1] * this->m[1][2];
+        float SubFactor16 = this->m[1][0] * this->m[2][3] - this->m[2][0] * this->m[1][3];
+        float SubFactor17 = this->m[1][0] * this->m[2][2] - this->m[2][0] * this->m[1][2];
+        float SubFactor18 = this->m[1][0] * this->m[2][1] - this->m[2][0] * this->m[1][1];
+/*
+        tmat4x4<T> Inverse(
+            + (this->m[1][1] * SubFactor00 - this->m[1][2] * SubFactor01 + this->m[1][3] * SubFactor02),
+            - (this->m[1][0] * SubFactor00 - this->m[1][2] * SubFactor03 + this->m[1][3] * SubFactor04),
+            + (this->m[1][0] * SubFactor01 - this->m[1][1] * SubFactor03 + this->m[1][3] * SubFactor05),
+            - (this->m[1][0] * SubFactor02 - this->m[1][1] * SubFactor04 + this->m[1][2] * SubFactor05),
+
+            - (this->m[0][1] * SubFactor00 - this->m[0][2] * SubFactor01 + this->m[0][3] * SubFactor02),
+            + (this->m[0][0] * SubFactor00 - this->m[0][2] * SubFactor03 + this->m[0][3] * SubFactor04),
+            - (this->m[0][0] * SubFactor01 - this->m[0][1] * SubFactor03 + this->m[0][3] * SubFactor05),
+            + (this->m[0][0] * SubFactor02 - this->m[0][1] * SubFactor04 + this->m[0][2] * SubFactor05),
+
+            + (this->m[0][1] * SubFactor06 - this->m[0][2] * SubFactor07 + this->m[0][3] * SubFactor08),
+            - (this->m[0][0] * SubFactor06 - this->m[0][2] * SubFactor09 + this->m[0][3] * SubFactor10),
+            + (this->m[0][0] * SubFactor11 - this->m[0][1] * SubFactor09 + this->m[0][3] * SubFactor12),
+            - (this->m[0][0] * SubFactor08 - this->m[0][1] * SubFactor10 + this->m[0][2] * SubFactor12),
+
+            - (this->m[0][1] * SubFactor13 - this->m[0][2] * SubFactor14 + this->m[0][3] * SubFactor15),
+            + (this->m[0][0] * SubFactor13 - this->m[0][2] * SubFactor16 + this->m[0][3] * SubFactor17),
+            - (this->m[0][0] * SubFactor14 - this->m[0][1] * SubFactor16 + this->m[0][3] * SubFactor18),
+            + (this->m[0][0] * SubFactor15 - this->m[0][1] * SubFactor17 + this->m[0][2] * SubFactor18));
+*/
+        float inv[16] = {
+            + this->m[1][1] * SubFactor00 - this->m[1][2] * SubFactor01 + this->m[1][3] * SubFactor02,
+            - this->m[1][0] * SubFactor00 + this->m[1][2] * SubFactor03 - this->m[1][3] * SubFactor04,
+            + this->m[1][0] * SubFactor01 - this->m[1][1] * SubFactor03 + this->m[1][3] * SubFactor05,
+            - this->m[1][0] * SubFactor02 + this->m[1][1] * SubFactor04 - this->m[1][2] * SubFactor05,
+
+            - this->m[0][1] * SubFactor00 + this->m[0][2] * SubFactor01 - this->m[0][3] * SubFactor02,
+            + this->m[0][0] * SubFactor00 - this->m[0][2] * SubFactor03 + this->m[0][3] * SubFactor04,
+            - this->m[0][0] * SubFactor01 + this->m[0][1] * SubFactor03 - this->m[0][3] * SubFactor05,
+            + this->m[0][0] * SubFactor02 - this->m[0][1] * SubFactor04 + this->m[0][2] * SubFactor05,
+
+            + this->m[0][1] * SubFactor06 - this->m[0][2] * SubFactor07 + this->m[0][3] * SubFactor08,
+            - this->m[0][0] * SubFactor06 + this->m[0][2] * SubFactor09 - this->m[0][3] * SubFactor10,
+            + this->m[0][0] * SubFactor11 - this->m[0][1] * SubFactor09 + this->m[0][3] * SubFactor12,
+            - this->m[0][0] * SubFactor08 + this->m[0][1] * SubFactor10 - this->m[0][2] * SubFactor12,
+
+            - this->m[0][1] * SubFactor13 + this->m[0][2] * SubFactor14 - this->m[0][3] * SubFactor15,
+            + this->m[0][0] * SubFactor13 - this->m[0][2] * SubFactor16 + this->m[0][3] * SubFactor17,
+            - this->m[0][0] * SubFactor14 + this->m[0][1] * SubFactor16 - this->m[0][3] * SubFactor18,
+            + this->m[0][0] * SubFactor15 - this->m[0][1] * SubFactor17 + this->m[0][2] * SubFactor18 };
+
+        mat4 Inverse(inv);
+        Inverse.transpose();
+        float Determinant = 
+                        + this->m[0][0] * Inverse.m[0][0] 
+                        + this->m[0][1] * Inverse.m[1][0] 
+                        + this->m[0][2] * Inverse.m[2][0] 
+                        + this->m[0][3] * Inverse.m[3][0];
+
+        Inverse *= (1.0/Determinant);
+        *this = Inverse;
         return *this;
     }
 
