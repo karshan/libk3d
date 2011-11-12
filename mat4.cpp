@@ -248,8 +248,18 @@ namespace k3d {
     {
         mat4 m;
         m.m[3][3] = 0.0;
+        m.m[2][2] = 0.0;
         m.m[2][3] = -1.0;
         *this = *this * m;
+    }
+
+    void mat4::perspective(float left, float right, float top, float bottom, float near, float far)
+    {
+        float pm[16] = { (-2*near)/(right-left), 0.0, 0.0, 0.0,
+                         0.0, (-2*near)/(top-bottom), 0.0, 0.0,
+                         (right+left)/(right-left), (top+bottom)/(top-bottom), -((far+near)/(far-near)), -1.0,
+                         0.0, 0.0, (2*far*near)/(far-near), 0.0 };
+        *this = *this * mat4(pm);
     }
 
 }

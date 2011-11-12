@@ -23,6 +23,7 @@ namespace k3d
         vec3(): x(0.0), y(0.0), z(0.0) {}
         vec3(float xx, float yy, float zz): x(xx), y(yy), z(zz) {}
 
+        friend std::ostream & operator<<(std::ostream &, const vec3 &);
         vec3 & normalize();
         float magnitude();
         vec3 & operator=(const vec3 & rhs);
@@ -64,6 +65,8 @@ namespace k3d
         void lookAt(vec3 eye, vec3 center, vec3 up);
 
         void infPerspective(); // TO BE REPLACED
+
+        void perspective(float left, float right, float top, float bottom, float near, float far);
     };
 
     vec3 operator*(const mat4 & mat, const vec3 & v); //hacky
