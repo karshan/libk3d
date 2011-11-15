@@ -100,6 +100,25 @@ namespace k3d
 
         bool loadObj(const char *objfilename);
     };
+
+    class gl {
+        // Handles to uniform variables in the shader
+        static GLuint gmMV;     // mModelView
+        static GLuint gmMVP;    // mModelViewProjection
+        static GLuint gmN;      // mNormalMatrix
+        static GLuint gvLight0;
+
+        static k3d::mat4 mNormal;
+
+    public:
+        static k3d::mat4 mModelView;
+        static k3d::mat4 mProjection;
+        static k3d::vec3 vLight0;
+
+        static void initialize(GLuint MV, GLuint MVP, GLuint N, GLuint Light0);
+        static void sendMatrices();
+        static void sendLight0();
+    };
 } // namespace k3d
 
 #endif //_K3D_H
