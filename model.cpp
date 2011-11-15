@@ -5,21 +5,24 @@
 #include <sstream>
 #include <string>
 
+#include "util.h"
+
 namespace k3d {
 
     void model::draw(GLuint gvPositionHandle, GLuint gvNormalHandle)
     {
         glVertexAttribPointer(gvPositionHandle, 3, GL_FLOAT, GL_FALSE, 0, &(vs[0]));
-//        checkGlError("glVertexAttribPointer");
+        checkGlError("glVertexAttribPointer");
         glEnableVertexAttribArray(gvPositionHandle);
-//        checkGlError("glEnableVertexAttribArray");
+        checkGlError("glEnableVertexAttribArray");
 
         glVertexAttribPointer(gvNormalHandle, 3, GL_FLOAT, GL_FALSE, 0, &(ns[0]));
-        //checkGlError("glVertexAttribPointer");
+        checkGlError("glVertexAttribPointer");
         glEnableVertexAttribArray(gvNormalHandle);
+        checkGlError("glEnableVertexAttribArray");
 
         glDrawElements(GL_TRIANGLES, faces.size()*3, GL_UNSIGNED_SHORT, &(faces[0]));
-//        checkGlError("glDrawElements");
+        checkGlError("glDrawElements");
     }
 
     void model::clear()

@@ -5,7 +5,7 @@ LIBNAME=libk3d.a
 
 all: $(LIBNAME)
 
-OBJS=mat4.o model.o vec3.o
+OBJS=mat4.o model.o vec3.o vec2.p
 
 libk3d.a: $(OBJS)
 	ar -cvq $(LIBNAME) $(OBJS)

@@ -1,12 +1,10 @@
 #ifndef _K3D_H
 #define _K3D_H
 
-#ifdef ANDROID
+#if 1
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#endif
-
-#ifdef linux 
+#else
 #include <GL/glew.h>
 #include <GL/gl.h>
 #endif
@@ -17,6 +15,17 @@
 // TODO: const correctness (for member functions)
 namespace k3d
 {
+    struct vec2 {
+        float x, y;
+
+        vec2(): x(0.0), y(0.0) {}
+        vec2(float xx, float yy): x(xx), y(yy) {}
+        vec2 & operator=(const vec2 & rhs);
+        friend vec2 operator+(const vec2 & a, const vec2 & b);
+        friend vec2 operator-(const vec2 & a, const vec2 & b);
+        friend vec2 operator*(const float s, const vec2 & v);
+    };
+
     struct vec3 {
         float x, y, z;
 
@@ -31,7 +40,7 @@ namespace k3d
         friend float dot(const vec3 & a, const vec3 & b);
         friend vec3 operator+(const vec3 & a, const vec3 & b);
         friend vec3 operator-(const vec3 & a, const vec3 & b);
-        friend vec3 operator*(const float & s, const vec3 & v);
+        friend vec3 operator*(const float s, const vec3 & v);
     };
 
     struct mat4 {
