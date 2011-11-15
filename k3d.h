@@ -94,7 +94,7 @@ namespace k3d
 
         void computeNormals();
     public:
-        void draw(GLuint, GLuint);
+        void draw();
 
         void clear();
 
@@ -108,6 +108,7 @@ namespace k3d
         static GLuint gmN;      // mNormalMatrix
         static GLuint gvLight0;
 
+
         static k3d::mat4 mNormal;
 
     public:
@@ -115,7 +116,11 @@ namespace k3d
         static k3d::mat4 mProjection;
         static k3d::vec3 vLight0;
 
-        static void initialize(GLuint MV, GLuint MVP, GLuint N, GLuint Light0);
+        // TODO: protection ?
+        static GLuint gvPosition;
+        static GLuint gvNormal;
+
+        static void initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Light0);
         static void sendMatrices();
         static void sendLight0();
     };

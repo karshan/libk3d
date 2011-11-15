@@ -7,14 +7,18 @@ namespace k3d {
     GLuint gl::gmMVP = -1;    // mModelViewProjection
     GLuint gl::gmN = -1;      // mNormalMatrix
     GLuint gl::gvLight0 = -1;
+    GLuint gl::gvPosition = -1;
+    GLuint gl::gvNormal = -1;
     k3d::mat4 gl::mModelView;
     k3d::mat4 gl::mProjection;
     k3d::vec3 gl::vLight0;
     k3d::mat4 gl::mNormal;
 
 
-    void gl::initialize(GLuint MV, GLuint MVP, GLuint N, GLuint Light0)
+    void gl::initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Light0)
     {
+        gl::gvPosition = pos;
+        gl::gvNormal = norm;
         gl::gmMV = MV;
         gl::gmMVP = MVP;
         gl::gmN = N;
