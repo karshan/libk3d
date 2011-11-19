@@ -20,6 +20,10 @@ namespace k3d
 
         vec2(): x(0.0), y(0.0) {}
         vec2(float xx, float yy): x(xx), y(yy) {}
+
+
+        vec2 & normalize();
+        friend float dot(const vec2 & a, const vec2 & b);
         vec2 & operator=(const vec2 & rhs);
         friend vec2 operator+(const vec2 & a, const vec2 & b);
         friend vec2 operator-(const vec2 & a, const vec2 & b);
@@ -94,6 +98,9 @@ namespace k3d
 
         void computeNormals();
     public:
+        model() {}
+        model(const char *objfilename) { loadObj(objfilename); }
+
         void draw();
 
         void clear();
@@ -107,7 +114,9 @@ namespace k3d
         static GLuint gmMVP;    // mModelViewProjection
         static GLuint gmN;      // mNormalMatrix
         static GLuint gvLight0;
-
+        static GLuint gvColor;
+        static GLuint gvPosition;
+        static GLuint gvNormal;
 
         static k3d::mat4 mNormal;
 
@@ -116,13 +125,11 @@ namespace k3d
         static k3d::mat4 mProjection;
         static k3d::vec3 vLight0;
 
-        // TODO: protection ?
-        static GLuint gvPosition;
-        static GLuint gvNormal;
-
-        static void initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Light0);
+        static void initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Color, GLuint Light0);
         static void sendMatrices();
         static void sendLight0();
+        static void sendColor(float r, float g, float b, float a);
+        static void draw(const std::vector<vec3> &vs, const std::vector<vec3> &ns, const std::vector<face> &faces);
     };
 } // namespace k3d
 

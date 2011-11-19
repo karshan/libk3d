@@ -9,20 +9,8 @@
 
 namespace k3d {
 
-    void model::draw()
-    {
-        glVertexAttribPointer(gl::gvPosition, 3, GL_FLOAT, GL_FALSE, 0, &(vs[0]));
-        checkGlError("glVertexAttribPointer");
-        glEnableVertexAttribArray(gl::gvPosition);
-        checkGlError("glEnableVertexAttribArray");
-
-        glVertexAttribPointer(gl::gvNormal, 3, GL_FLOAT, GL_FALSE, 0, &(ns[0]));
-        checkGlError("glVertexAttribPointer");
-        glEnableVertexAttribArray(gl::gvNormal);
-        checkGlError("glEnableVertexAttribArray");
-
-        glDrawElements(GL_TRIANGLES, faces.size()*3, GL_UNSIGNED_SHORT, &(faces[0]));
-        checkGlError("glDrawElements");
+    void model::draw() {
+        gl::draw(vs, ns, faces);
     }
 
     void model::clear()
