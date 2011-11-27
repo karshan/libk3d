@@ -5,9 +5,15 @@
 
 #include "k3d.h"
 
-void checkGlError(const char *n)
+#include <android/log.h>
+#define  LOG_TAG    "tanks"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+void checkGlError(const char *op)
 {
-// TODO implement me
+    for (GLint error = glGetError(); error; error = glGetError()) {
+        LOGI("after %s() glError (0x%x)\n", op, error);
+    }
 }
 
 namespace k3d {
@@ -107,16 +113,40 @@ namespace k3d {
     void gl::initialize(const char *vsfilename, const char *fsfilename)
     {
         glClearColor(0.0, 0.0, 0.0, 1.0f);
+        checkGlError("glClearColor");
+
         gl::gProgram = createProgram(readFile(vsfilename), readFile(fsfilename));
         glUseProgram(gl::gProgram);
+        checkGlError("glUseProgram");
 
         gl::gvPosition = glGetAttribLocation(gProgram, "vPosition");
+        if (gl::gvPosition == -1) {
+            LOGI("gvPosition not found\n");
+        }
         gl::gvNormal = glGetAttribLocation(gProgram, "vNormal");
+        if (gl::gvNormal == -1) {
+            LOGI("gvNormal not found\n");
+        }
         gl::gmMV = glGetUniformLocation(gProgram, "mModelView");
+        if (gl::gmMV == -1) {
+            LOGI("mModelView not found\n");
+        }
         gl::gmN = glGetUniformLocation(gProgram, "mNormalMatrix");
+        if (gl::gmN == -1) {
+            LOGI("mNoralMatrix not found\n");
+        }
         gl::gmMVP = glGetUniformLocation(gProgram, "mModelViewProjection");
+        if (gl::gmMVP == -1) {
+            LOGI("mModelViewProjection not found\n");
+        }
         gl::gvLight0 = glGetUniformLocation(gProgram, "vLightSource0");
+        if (gl::gvLight0 == -1) {
+            LOGI("vLightSource0 not found\n");
+        }
         gl::gvColor = glGetUniformLocation(gProgram, "vColor");
+        if (gl::gvColor == -1) {
+            LOGI("vColor not found\n");
+        }
 
         glEnable(GL_DEPTH_TEST);
     }

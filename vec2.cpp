@@ -23,6 +23,7 @@ namespace k3d {
     {
         x = rhs.x;
         y = rhs.y;
+        return *this;
     }
 
     vec2 operator+(const vec2 & a, const vec2 & b)

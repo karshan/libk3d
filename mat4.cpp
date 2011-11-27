@@ -74,6 +74,7 @@ namespace k3d {
                 m[i][j] *= s;
             }
         }
+        return *this;
     }
 
     std::ostream & operator<<(std::ostream & os, const mat4 & m) {
@@ -83,6 +84,7 @@ namespace k3d {
             }
             os << '\n';
         }
+        return os;
     }
 
     void mat4::glUniform(GLuint loc)
@@ -200,7 +202,6 @@ namespace k3d {
 
     void mat4::translatef(float a, float b, float c)
     {
-        float t[3] = {a, b, c};
         for (int row = 0; row < 4; row++) {
             m[3][row] += a*m[0][row] + b*m[1][row] + c*m[2][row];
         }

@@ -21,7 +21,6 @@ namespace k3d {
     void model::computeNormals()
     {
         for (unsigned i = 0; i < vs.size(); i++) {
-            int count = 0;
             ns.push_back(vec3(0.0, 0.0, 0.0));
             for (unsigned j = 0; j < faces.size(); j++) {
                 face f = faces[j];

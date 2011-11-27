@@ -1,7 +1,7 @@
 #ifndef _K3D_H
 #define _K3D_H
 
-#if 0
+#if 1
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #else
