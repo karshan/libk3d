@@ -1,10 +1,10 @@
 #ifndef _K3D_H
 #define _K3D_H
 
-#if 1
+#ifdef ANDROID
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#else
+#else // LINUX
 #include <GL/glew.h>
 #include <GL/gl.h>
 #endif
@@ -99,13 +99,12 @@ namespace k3d
         void computeNormals();
     public:
         model() {}
-        model(const char *objfilename) { loadObj(objfilename); }
 
         void draw();
 
         void clear();
 
-        bool loadObj(const char *objfilename);
+        bool loadObj(const char *objfilename) __attribute__((warn_unused_result));
     };
 
     class gl {
@@ -121,15 +120,17 @@ namespace k3d
 
         static k3d::mat4 mNormal;
 
-        static const char *readFile(const char *filename);
+        static const char *readFile(const char *filename); // TODO this doesn't belong here
         static GLuint createProgram(const char *pVertexSource, const char *pFragmentSource);
         static GLuint loadShader(GLenum shaderType, const char* pSource);
+
+        gl() {} // you can't create a gl!
     public:
         static k3d::mat4 mModelView;
         static k3d::mat4 mProjection;
         static k3d::vec3 vLight0;
 
-        static void initialize(const char *vsfilename, const char *fsfilename);
+        static bool initialize(const char *vsfilename, const char *fsfilename) __attribute__((warn_unused_result));
         static void sendMatrices();
         static void sendLight0();
         static void sendColor(float r, float g, float b, float a);
