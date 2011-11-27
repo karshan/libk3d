@@ -156,6 +156,7 @@ namespace k3d {
         }
 
         glEnable(GL_DEPTH_TEST);
+        return true;
     }
 
     void gl::sendMatrices()
