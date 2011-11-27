@@ -1,7 +1,7 @@
 #ifndef _K3D_H
 #define _K3D_H
 
-#if 1
+#if 0
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #else
@@ -110,6 +110,7 @@ namespace k3d
 
     class gl {
         // Handles to uniform variables in the shader
+        static GLuint gProgram;
         static GLuint gmMV;     // mModelView
         static GLuint gmMVP;    // mModelViewProjection
         static GLuint gmN;      // mNormalMatrix
@@ -120,12 +121,15 @@ namespace k3d
 
         static k3d::mat4 mNormal;
 
+        static const char *readFile(const char *filename);
+        static GLuint createProgram(const char *pVertexSource, const char *pFragmentSource);
+        static GLuint loadShader(GLenum shaderType, const char* pSource);
     public:
         static k3d::mat4 mModelView;
         static k3d::mat4 mProjection;
         static k3d::vec3 vLight0;
 
-        static void initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Color, GLuint Light0);
+        static void initialize(const char *vsfilename, const char *fsfilename);
         static void sendMatrices();
         static void sendLight0();
         static void sendColor(float r, float g, float b, float a);

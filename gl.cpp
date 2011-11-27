@@ -1,8 +1,18 @@
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <cstdlib>
+
 #include "k3d.h"
-#include "util.h"
+
+void checkGlError(const char *n)
+{
+// TODO implement me
+}
 
 namespace k3d {
 
+    GLuint gl::gProgram = 0;
     GLuint gl::gmMV = -1;     // mModelView
     GLuint gl::gmMVP = -1;    // mModelViewProjection
     GLuint gl::gmN = -1;      // mNormalMatrix
@@ -15,16 +25,100 @@ namespace k3d {
     k3d::vec3 gl::vLight0;
     k3d::mat4 gl::mNormal;
 
-
-    void gl::initialize(GLuint pos, GLuint norm, GLuint MV, GLuint MVP, GLuint N, GLuint Color, GLuint Light0)
+    const char * gl::readFile(const char *filename)
     {
-        gl::gvPosition = pos;
-        gl::gvNormal = norm;
-        gl::gmMV = MV;
-        gl::gmMVP = MVP;
-        gl::gmN = N;
-        gl::gvColor = Color;
-        gl::gvLight0 = Light0;
+        std::string strbuf;
+        std::string line;
+        std::ifstream in(filename);
+        while (std::getline(in, line))
+            strbuf.append(line + '\n');
+
+        char *buf = new char[(strbuf.size() + 1) * sizeof(*buf)];
+        strcpy(buf, strbuf.c_str());
+
+        return buf;
+    }
+
+    GLuint gl::loadShader(GLenum shaderType, const char* pSource) {
+        GLuint shader = glCreateShader(shaderType);
+        if (shader) {
+            glShaderSource(shader, 1, &pSource, NULL);
+            glCompileShader(shader);
+            GLint compiled = 0;
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+            if (!compiled) {
+                GLint infoLen = 0;
+                glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+                if (infoLen) {
+                    char* buf = (char*) malloc(infoLen);
+                    if (buf) {
+                        glGetShaderInfoLog(shader, infoLen, NULL, buf);
+                        printf("Could not compile shader %d:\n%s\n",
+                                shaderType, buf);
+                        free(buf);
+                    }
+                    glDeleteShader(shader);
+                    shader = 0;
+                }
+            }
+        }
+        return shader;
+    }
+
+
+
+    GLuint gl::createProgram(const char* pVertexSource, const char* pFragmentSource) {
+        GLuint vertexShader = loadShader(GL_VERTEX_SHADER, pVertexSource);
+        if (!vertexShader) {
+            return 0;
+        }
+
+        GLuint pixelShader = loadShader(GL_FRAGMENT_SHADER, pFragmentSource);
+        if (!pixelShader) {
+            return 0;
+        }
+
+        GLuint program = glCreateProgram();
+        if (program) {
+            glAttachShader(program, vertexShader);
+            glAttachShader(program, pixelShader);
+            glLinkProgram(program);
+            GLint linkStatus = GL_FALSE;
+            glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+            if (linkStatus != GL_TRUE) {
+                GLint bufLength = 0;
+                glGetProgramiv(program, GL_INFO_LOG_LENGTH, &bufLength);
+                if (bufLength) {
+                    char* buf = (char*) malloc(bufLength);
+                    if (buf) {
+                        glGetProgramInfoLog(program, bufLength, NULL, buf);
+                        printf("Could not link program:\n%s\n", buf);
+                        free(buf);
+                    }
+                }
+                glDeleteProgram(program);
+                program = 0;
+            }
+        }
+        return program;
+    }
+
+
+    void gl::initialize(const char *vsfilename, const char *fsfilename)
+    {
+        glClearColor(0.0, 0.0, 0.0, 1.0f);
+        gl::gProgram = createProgram(readFile(vsfilename), readFile(fsfilename));
+        glUseProgram(gl::gProgram);
+
+        gl::gvPosition = glGetAttribLocation(gProgram, "vPosition");
+        gl::gvNormal = glGetAttribLocation(gProgram, "vNormal");
+        gl::gmMV = glGetUniformLocation(gProgram, "mModelView");
+        gl::gmN = glGetUniformLocation(gProgram, "mNormalMatrix");
+        gl::gmMVP = glGetUniformLocation(gProgram, "mModelViewProjection");
+        gl::gvLight0 = glGetUniformLocation(gProgram, "vLightSource0");
+        gl::gvColor = glGetUniformLocation(gProgram, "vColor");
+
+        glEnable(GL_DEPTH_TEST);
     }
 
     void gl::sendMatrices()

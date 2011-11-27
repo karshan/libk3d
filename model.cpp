@@ -5,8 +5,6 @@
 #include <sstream>
 #include <string>
 
-#include "util.h"
-
 namespace k3d {
 
     void model::draw() {
@@ -43,8 +41,9 @@ namespace k3d {
         vec3 v;
         face f;
 
-        if (!in.is_open())
+        if (!in.is_open()) {
             return false;
+        }
 
         clear();
 
