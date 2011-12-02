@@ -4,6 +4,12 @@
 
 namespace k3d {
 
+    std::ostream & operator<<(std::ostream & os, const vec2 & v)
+    {
+        os << '<' << v.x << ", " << v.y << '>';
+        return os;
+    }
+
     vec2 & vec2::normalize()
     {
         float den = sqrt(x*x + y*y);

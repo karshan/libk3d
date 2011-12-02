@@ -21,6 +21,7 @@ namespace k3d
         vec2(): x(0.0), y(0.0) {}
         vec2(float xx, float yy): x(xx), y(yy) {}
 
+        friend std::ostream & operator<<(std::ostream &, const vec2 &);
 
         vec2 & normalize();
         friend float dot(const vec2 & a, const vec2 & b);
@@ -34,6 +35,7 @@ namespace k3d
         float x, y, z;
 
         vec3(): x(0.0), y(0.0), z(0.0) {}
+        vec3(vec2 v, float z) : x(v.x), y(v.y), z(z) {}
         vec3(float xx, float yy, float zz): x(xx), y(yy), z(zz) {}
 
         friend std::ostream & operator<<(std::ostream &, const vec3 &);
